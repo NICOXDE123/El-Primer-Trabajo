@@ -1,0 +1,32 @@
+{
+  "name": "el-primer-trabajo",
+  "version": "1.0.0",
+  "description": "API REST para ElectroPoint (categorías, proveedores, productos, ventas y detalle de ventas).",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/app/app.js",
+    "start": "node src/app/app.js",
+    "db:test": "node src/config/testconectiontienda.js"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "mysql",
+    "api-rest",
+    "electropoint"
+  ],
+  "author": "Nicolas",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.19.2",
+    "mysql2": "^3.14.3",
+    "sequelize": "^6.37.7",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
