@@ -1,11 +1,12 @@
 // src/models/index.js
 const sequelize = require('../config/databaseTienda.js');
 
-const Categoria = require('./Categoria');
-const Proveedor = require('./Proveedor');
-const Producto = require('./Producto');
-const Venta = require('./Venta');
-const DetalleVenta = require('./DetalleVenta');
+const Categoria = require('./Categoria_models');
+const Proveedor = require('./Proveedor_models');
+const Producto = require('./Producto_Models');
+const Venta = require('./Venta_Models');
+const DetalleVenta = require('./DetalleVenta_Models');
+const VentaResumen = require('./VentaResumen_Models');
 
 // Asociaciones
 // Categoria 1..N Producto
@@ -56,5 +57,6 @@ module.exports = {
   Proveedor,
   Producto,
   Venta,
-  DetalleVenta
+  DetalleVenta,
+  VentaResumen
 };

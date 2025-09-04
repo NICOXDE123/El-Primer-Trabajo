@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const ctrl = require('../controllers/Proveedor_Controller.js');
+const ctrl = require('../controllers/Proveedor_Controllers');
 
 router.get('/', ctrl.list);
 router.get('/:id', ctrl.get);

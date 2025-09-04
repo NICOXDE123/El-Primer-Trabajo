@@ -4,13 +4,14 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-const { sequelize } = require('./models');
+const { sequelize } = require('../models'); //  ✅ <- fijate aquí
 
-const categoriaRoutes   = require('./routes/Categoria_Routers.js');
-const proveedorRoutes   = require('./routes/Proveedor_Routers.js');
-const productoRoutes    = require('./routes/Producto_Routers.js');
-const ventaRoutes       = require('./routes/Venta_Routes.js');
-const detalleRoutes     = require('./routes/DetalleVenta_Routes.js');
+const categoriaRoutes = require('../routes/Categoria_Routes.js');   // ✅
+const proveedorRoutes = require('../routes/Proveedor_Routes.js');   // ✅
+const productoRoutes  = require('../routes/Producto_Routes.js');
+const ventaRoutes     = require('../routes/Venta_Routes.js');
+const detalleRoutes   = require('../routes/DetalleVenta_Routes.js');
+const ventaResumenRoutes = require('../routes/VentaResumen_Routes.js');
 
 app.use(cors());
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use('/api/proveedores', proveedorRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/ventas', ventaRoutes);
 app.use('/api/detalles', detalleRoutes);
+app.use('/api/ventas/resumen', ventaResumenRoutes);
 
 // Health
 app.get('/', (req, res) => {
@@ -41,14 +43,12 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-sequelize.authenticate().then(() => {
-  console.log('Conexión a MySQL exitosa');
-  // En desarrollo, si quieres crear tablas automáticamente:
-  // return sequelize.sync(); // o { alter: true }
-}).then(() => {
-  app.listen(PORT, () => console.log(`API escuchando en puerto ${PORT}`));
-}).catch(err => {
-  console.error('Error de conexión a MySQL:', err.message);
-});
+sequelize.authenticate()
+  .then(() => {
+    console.log('Conexión a MySQL exitosa');
+    // return sequelize.sync(); // en dev, si quieres
+  })
+  .then(() => app.listen(PORT, () => console.log(`API escuchando en puerto ${PORT}`)))
+  .catch(err => console.error('Error de conexión a MySQL:', err.message));
 
 module.exports = app;
