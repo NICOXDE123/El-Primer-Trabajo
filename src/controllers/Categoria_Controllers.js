@@ -1,35 +1,44 @@
-import * as model from "src/models/Categoria_Models.js";
+const { Op } = require('sequelize');
+const { Categoria } = require('../models');
 
-export const list = async (_req, res, next) => {
-  try { const [rows] = await model.findAll(); res.json(rows); }
-  catch (e) { next(e); }
-};
-
-export const getOne = async (req, res, next) => {
+exports.list = async (req, res, next) => {
   try {
-    const [rows] = await model.findById(req.params.id);
-    if (!rows.length) return res.status(404).json({ error: "No encontrada" });
-    res.json(rows[0]);
+    const { q } = req.query;
+    const where = q ? { NomCategoria: { [Op.substring]: q.trim() } } : {};
+    const data = await Categoria.findAll({ where, order: [['Id_Categoria', 'ASC']] });
+    res.json(data);
   } catch (e) { next(e); }
 };
 
-export const create = async (req, res, next) => {
+exports.get = async (req, res, next) => {
   try {
-    const { NomCategoria } = req.body;
-    if (!NomCategoria) return res.status(400).json({ error: "NomCategoria es requerido" });
-    const [rs] = await model.create(NomCategoria);
-    res.status(201).json({ Id_Categoria: rs.insertId, NomCategoria });
+    const item = await Categoria.findByPk(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Categoría no encontrada' });
+    res.json(item);
   } catch (e) { next(e); }
 };
 
-export const update = async (req, res, next) => {
+exports.create = async (req, res, next) => {
   try {
-    await model.update(req.params.id, req.body.NomCategoria);
+    const item = await Categoria.create(req.body);
+    res.status(201).json(item);
+  } catch (e) { next(e); }
+};
+
+exports.update = async (req, res, next) => {
+  try {
+    const item = await Categoria.findByPk(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Categoría no encontrada' });
+    await item.update(req.body);
+    res.json(item);
+  } catch (e) { next(e); }
+};
+
+exports.remove = async (req, res, next) => {
+  try {
+    const item = await Categoria.findByPk(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Categoría no encontrada' });
+    await item.destroy();
     res.json({ ok: true });
   } catch (e) { next(e); }
-};
-
-export const remove = async (req, res, next) => {
-  try { await model.remove(req.params.id); res.json({ ok: true }); }
-  catch (e) { next(e); }
 };

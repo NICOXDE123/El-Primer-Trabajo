@@ -1,24 +1,44 @@
-import { pool } from "../config/databaseTienda.js";
+// src/models/Proveedor.js
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/databaseTienda.js');
 
-export const findAll = () =>
-  pool.query("SELECT * FROM Proveedor ORDER BY NomProveedor");
+const Proveedor = sequelize.define('Proveedor', {
+  Id_Proveedor: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  NomProveedor: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    unique: true,
+    set(v) {
+      if (typeof v === 'string') this.setDataValue('NomProveedor', v.trim());
+      else this.setDataValue('NomProveedor', v);
+    },
+    validate: {
+      notEmpty: { msg: 'NomProveedor es obligatorio' },
+      len: { args: [2, 100], msg: 'NomProveedor debe tener entre 2 y 100 caracteres' }
+    }
+  },
+  Telefono: {
+    type: DataTypes.STRING(30),
+    allowNull: true
+  },
+  Email: {
+    type: DataTypes.STRING(150),
+    allowNull: true,
+    validate: { isEmail: { msg: 'Email no válido' } }
+  },
+  Contacto: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  }
+}, {
+  tableName: 'Proveedor',
+  timestamps: false,
+  charset: 'utf8mb4',
+  collate: 'utf8mb4_0900_ai_ci'
+});
 
-export const findById = (id) =>
-  pool.query("SELECT * FROM Proveedor WHERE Id_Proveedor=?", [id]);
-
-export const create = ({ NomProveedor, Telefono=null, Email=null, Contacto=null }) =>
-  pool.query(
-    "INSERT INTO Proveedor (NomProveedor, Telefono, Email, Contacto) VALUES (?,?,?,?)",
-    [NomProveedor, Telefono, Email, Contacto]
-  );
-
-export const update = (id, { NomProveedor, Telefono, Email, Contacto }) =>
-  pool.query(
-    `UPDATE Proveedor
-     SET NomProveedor=?, Telefono=?, Email=?, Contacto=?
-     WHERE Id_Proveedor=?`,
-    [NomProveedor, Telefono, Email, Contacto, id]
-  );
-
-export const remove = (id) =>
-  pool.query("DELETE FROM Proveedor WHERE Id_Proveedor=?", [id]);
+module.exports = Proveedor;

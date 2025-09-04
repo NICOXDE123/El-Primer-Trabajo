@@ -1,9 +1,11 @@
-import { Router } from "express";
-import * as ctrl from "../controllers/Proveedor_Controllers.js";
-const r = Router();
-r.get("/", ctrl.list);
-r.get("/:id", ctrl.getOne);
-r.post("/", ctrl.create);
-r.put("/:id", ctrl.update);
-r.delete("/:id", ctrl.remove);
-export default r;
+const express = require('express');
+const router = express.Router();
+const ctrl = require('../controllers/Proveedor_Controller.js');
+
+router.get('/', ctrl.list);
+router.get('/:id', ctrl.get);
+router.post('/', ctrl.create);
+router.put('/:id', ctrl.update);
+router.delete('/:id', ctrl.remove);
+
+module.exports = router;

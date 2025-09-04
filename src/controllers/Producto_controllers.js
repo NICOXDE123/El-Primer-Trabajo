@@ -1,34 +1,104 @@
-import * as model from "../models/Producto_Models.js";
+const { Op } = require('sequelize');
+const { Producto, Categoria, Proveedor } = require('../models');
 
-export const list = async (_req, res, next) => {
-  try { const [rows] = await model.findAll(); res.json(rows); }
-  catch (e) { next(e); }
-};
-
-export const getOne = async (req, res, next) => {
+exports.list = async (req, res, next) => {
   try {
-    const [rows] = await model.findById(req.params.id);
-    if (!rows.length) return res.status(404).json({ error: "No encontrado" });
-    res.json(rows[0]);
+    const { q } = req.query;
+    const where = q ? { NomProducto: { [Op.substring]: q.trim() } } : {};
+    const data = await Producto.findAll({
+      where,
+      include: [
+        { model: Categoria, as: 'Categoria', attributes: ['Id_Categoria', 'NomCategoria'] },
+        { model: Proveedor, as: 'Proveedor', attributes: ['Id_Proveedor', 'NomProveedor'] }
+      ],
+      order: [['Id_Producto', 'ASC']]
+    });
+    res.json(data);
   } catch (e) { next(e); }
 };
 
-export const create = async (req, res, next) => {
+exports.get = async (req, res, next) => {
   try {
-    const { NomProducto, Id_Categoria, Id_Proveedor } = req.body;
-    if (!NomProducto || !Id_Categoria || !Id_Proveedor)
-      return res.status(400).json({ error: "NomProducto, Id_Categoria e Id_Proveedor son requeridos" });
-    const [rs] = await model.create(req.body);
-    res.status(201).json({ Id_Producto: rs.insertId });
+    const item = await Producto.findByPk(req.params.id, {
+      include: [
+        { model: Categoria, as: 'Categoria', attributes: ['Id_Categoria', 'NomCategoria'] },
+        { model: Proveedor, as: 'Proveedor', attributes: ['Id_Proveedor', 'NomProveedor'] }
+      ]
+    });
+    if (!item) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json(item);
   } catch (e) { next(e); }
 };
 
-export const update = async (req, res, next) => {
-  try { await model.update(req.params.id, req.body); res.json({ ok: true }); }
-  catch (e) { next(e); }
+exports.create = async (req, res, next) => {
+  try {
+    const item = await Producto.create(req.body);
+    res.status(201).json(item);
+  } catch (e) { next(e); }
 };
 
-export const remove = async (req, res, next) => {
-  try { await model.remove(req.params.id); res.json({ ok: true }); }
-  catch (e) { next(e); }
+exports.update = async (req, res, next) => {
+  try {
+    const item = await Producto.findByPk(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Producto no encontrado' });
+    await item.update(req.body);
+    res.json(item);
+  } catch (e) { next(e); }
+};
+
+exports.remove = async (req, res, next) => {
+  try {
+    const item = await Producto.findByPk(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Producto no encontrado' });
+    await item.destroy();
+    res.json({ ok: true });
+  } catch (e) { next(e); }
+};
+
+// GET /api/productos/categoria/:categoria  (id numérico o nombre)
+exports.byCategoria = async (req, res, next) => {
+  try {
+    const { categoria } = req.params;
+    const whereCat = /^\d+$/.test(categoria)
+      ? { Id_Categoria: Number(categoria) }
+      : { NomCategoria: { [Op.substring]: categoria.trim() } };
+
+    const data = await Producto.findAll({
+      include: [{
+        model: Categoria,
+        as: 'Categoria',
+        where: whereCat,
+        attributes: ['Id_Categoria', 'NomCategoria']
+      }, {
+        model: Proveedor,
+        as: 'Proveedor',
+        attributes: ['Id_Proveedor', 'NomProveedor']
+      }]
+    });
+    res.json(data);
+  } catch (e) { next(e); }
+};
+
+// GET /api/productos/proveedor/:proveedor (id numérico o nombre)
+exports.byProveedor = async (req, res, next) => {
+  try {
+    const { proveedor } = req.params;
+    const whereProv = /^\d+$/.test(proveedor)
+      ? { Id_Proveedor: Number(proveedor) }
+      : { NomProveedor: { [Op.substring]: proveedor.trim() } };
+
+    const data = await Producto.findAll({
+      include: [{
+        model: Proveedor,
+        as: 'Proveedor',
+        where: whereProv,
+        attributes: ['Id_Proveedor', 'NomProveedor']
+      }, {
+        model: Categoria,
+        as: 'Categoria',
+        attributes: ['Id_Categoria', 'NomCategoria']
+      }]
+    });
+    res.json(data);
+  } catch (e) { next(e); }
 };

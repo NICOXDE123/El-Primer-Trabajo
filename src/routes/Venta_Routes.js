@@ -1,8 +1,10 @@
-import { Router } from "express";
-import * as ctrl from "../controllers/Venta_Controllers.js";
-const r = Router();
-r.get("/", ctrl.list);
-r.get("/:id", ctrl.getOne);
-r.post("/", ctrl.create);
-r.delete("/:id", ctrl.remove);
-export default r;
+const express = require('express');
+const router = express.Router();
+const ctrl = require('../controllers/Venta_Controller.js');
+
+router.get('/', ctrl.list);
+router.get('/:id', ctrl.get);
+router.post('/', ctrl.create);
+router.delete('/:id', ctrl.remove);
+
+module.exports = router;

@@ -1,5 +1,5 @@
 // src/config/testConnection.js
-const sequelize = require('./databaseTienda');
+const sequelize = require('./databaseTienda.js');
 // Función para probar la conexión
 async function testConnection() {
 try {
@@ -8,8 +8,7 @@ await sequelize.authenticate();
 console.log('Conexión a MySQL exitosa!');
 // Mostrar información de la conexión
 console.log(`Base de datos: ${sequelize.config.database}`);
-console.log(`Host: ${sequelize.config.host}:${sequelize.config.port}`);
-} catch (error) {
+console.log(`Host: ${sequelize.config.host}:${sequelize.config.port}`)} catch (error) {
 console.error('Error al conectar con MySQL:', error.message);
 // Ayuda para errores comunes
 if (error.message.includes('ECONNREFUSED')) {

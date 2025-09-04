@@ -7,16 +7,10 @@
   "scripts": {
     "dev": "nodemon src/app/app.js",
     "start": "node src/app/app.js",
-    "db:test": "node src/config/testconectiontienda.js"
+    "db:test": "node src/config/testConectiontienda.js"
   },
-  "keywords": [
-    "node",
-    "express",
-    "mysql",
-    "api-rest",
-    "electropoint"
-  ],
-  "author": "Nicolas",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
